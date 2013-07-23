@@ -107,13 +107,15 @@ class badges_testcase extends advanced_testcase {
         $criteria_overall = award_criteria::build(array('criteriatype' => 'overall', 'badgeid' => $badge->id));
         $criteria_overall->save(array('agg' => BADGE_CRITERIA_AGGREGATION_ALL));
 
-        $this->assertCount(1, $badge->get_criteria());
+        list($validcriteria, $invalidcriteria) = $badge->get_criteria();
+        $this->assertCount(1, $validcriteria);
 
         $criteria_profile = award_criteria::build(array('criteriatype' => 'profile', 'badgeid' => $badge->id));
         $params = array('agg' => BADGE_CRITERIA_AGGREGATION_ALL, 'field_address' => 'address');
         $criteria_profile->save($params);
 
-        $this->assertCount(2, $badge->get_criteria());
+        list($validcriteria, $invalidcriteria) = $badge->get_criteria();
+        $this->assertCount(2, $validcriteria);
     }
 
     public function test_delete_badge_criteria() {
@@ -124,7 +126,8 @@ class badges_testcase extends advanced_testcase {
         $this->assertInstanceOf('award_criteria_overall', $badge->criteria['overall']);
 
         $badge->criteria['overall']->delete();
-        $this->assertEmpty($badge->get_criteria());
+        list($validcriteria, $invalidcriteria) = $badge->get_criteria();
+        $this->assertEmpty($validcriteria);
     }
 
     public function test_badge_awards() {
